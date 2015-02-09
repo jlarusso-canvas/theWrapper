@@ -9,18 +9,40 @@ end
 
 class ThePlatform
   include HTTParty
+  base_uri 'https://identity.auth.theplatform.com/idm/web/Authentication'
 
   SCHEMA_VERSION = '1.2'
   FORMAT = 'json'
 
   def initialize
     @options = { query: {schema: SCHEMA_VERSION, form: FORMAT} }
+
+    # For getting a new token
+    @username = 'jlarusso@canvas.is'
+    @password = 'wQN46ww/dref+iWiLCru'
+
+    # For making a request
     @account = "http://access.auth.theplatform.com/data/Account/2639090593"
-    @token = 'abc123'
+    @token = nil
   end
 
-  def auth_hash
-    { basic_auth: { username: @account, password: @token } }
+  # Requests -----------------------------------------------------------------
+  def token
+    url = '/signIn'
+    params = @options.merge auth_hash(@username, @password)
+
+    request(:get, url, params)
+  end
+
+  private
+
+  def auth_hash(username = @account, password = @token)
+    { basic_auth: { username: username, password: password } }
+  end
+
+  def request(method, url, params)
+    log("#{method.to_s.upcase} #{url}".yellow, params)
+    self.class.send(method, url, params)
   end
 
   def log(*items)
@@ -31,13 +53,17 @@ end
 class ThePlatformMedia < ThePlatform
   base_uri 'data.media.theplatform.com/media/data/Media'
 
-  def all_media
-    log "GET '/'".yellow, @options.merge(auth_hash)
-    self.class.get "/", @options.merge(auth_hash)
+  # Requests -----------------------------------------------------------------
+  def media
+    url = '/'
+    params = @options.merge(auth_hash)
+
+    request(:get, url, params)
   end
 end
 
 tpm = ThePlatformMedia.new
-# tpm.all_media
+# tpm.token
+# tpm.media
 
 binding.pry
