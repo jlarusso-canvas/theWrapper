@@ -1,4 +1,4 @@
-### theWrapper
+### theWrapper for thePlatform
 
 1. `bundle install`
 2. `ruby the_wrapper.rb`
