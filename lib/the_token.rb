@@ -21,6 +21,7 @@ class TheToken
     # @token = nil
   end
 
+  # TODO: Handle expired tokens seamlessly
   def token
     unless @@token
       url = '/signIn'
